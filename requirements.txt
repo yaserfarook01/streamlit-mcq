@@ -1,0 +1,14 @@
+streamlit==1.22.0
+tiktoken==0.4.0
+faiss-cpu==1.7.4
+protobuf==3.19.0
+mysql-connector-python
+pymysql
+sentence-transformers
+chromadb
+langchain==0.0.284
+langchain_community
+google-generativeai
+notebook
+python-dotenv==1.0.0
+
