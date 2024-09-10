@@ -2,5 +2,6 @@ streamlit
 langchain
 langchain_community
 google-generativeai
+mysql-connector-python
 
 
