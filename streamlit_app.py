@@ -17,7 +17,7 @@ llm = GooglePalm(google_api_key=api_key, temperature=0.4, model_name="gemini-1.5
 
 # Define the prompt template
 prompt_template = (
-    "Generate {num_questions} unique multiple-choice questions (MCQs) about {topic}. "
+    "Generate {num_questions} unique multiple-choice questions (MCQs) about {topic} with {difficulty} difficulty. "
     "Each question should have one correct answer and three incorrect options. "
     "The question should not involve any code and should be non-googlable. "
     "Format each question and answer as follows:\n\n"
@@ -35,8 +35,8 @@ prompt_template = (
 )
 
 # Function to generate MCQs with retry mechanism
-def generate_mcqs(topic, num_questions, max_retries=3):
-    prompt = prompt_template.format(topic=topic, num_questions=num_questions)
+def generate_mcqs(topic, num_questions, difficulty, max_retries=3):
+    prompt = prompt_template.format(topic=topic, num_questions=num_questions,difficulty=difficulty)
     for attempt in range(max_retries):
         try:
             response = llm(prompt)
@@ -270,13 +270,14 @@ def parse_and_save_mcqs(input_text, output_csv):
         return False
 
 # Streamlit application
-st.title("MCQ Generator and CSV Parser")
+st.title("OG MCQ Generator")
 
 # Upload input text file
 # uploaded_file = st.file_uploader("Choose a text file", type="txt")
 
 # Inputs for topic and number of questions
-topic = st.text_input("Enter the topic:")
+topic = st.text_input("Enter the topic: (example : ec2, hooks)")
+difficulty = st.radio("Select difficulty level:", ('easy', 'medium', 'hard'))
 num_questions = st.number_input("Enter the number of questions:", min_value=1, max_value=1000, value=10)
 
 # Filenames for saving files
@@ -285,13 +286,13 @@ json_filename = 'questions_prompt.json'
 csv_filename = 'questions_prompt.csv'
 unique_mcq_filename = 'unique_mcq.txt'
 
-if st.button("Generate MCQs"):
+if st.button("Cook MCQs"):
     if topic:
         try:
             # Step 1: Generate MCQs
-            mcqs = generate_mcqs(topic, num_questions)
+            mcqs = generate_mcqs(topic, num_questions, difficulty)
             save_to_file(text_filename, mcqs)
-            st.success(f"MCQs generated and saved to {text_filename}.")
+            st.success(f"MCQs generated with {difficulty} difficulty and saved to {text_filename}.")
 
             # Step 2: Parse and check for duplicates
             mcqs_parsed = parse_mcqs_from_text(mcqs)
@@ -301,7 +302,7 @@ if st.button("Generate MCQs"):
                 # Step 3: Insert the unique MCQs into the database
                 create_table_for_mcqs()  # Ensure table exists
                 insert_mcqs_into_db(mcqs_unique)
-                st.success("Unique MCQs inserted into the database.")
+                st.success(f"Unique MCQs with {difficulty} difficulty inserted into the database.")
                 # Save unique MCQs to a text file
                 save_unique_mcqs_to_file(unique_mcq_filename, mcqs_unique)
                 st.success(f"Unique MCQs saved to {unique_mcq_filename}.")
