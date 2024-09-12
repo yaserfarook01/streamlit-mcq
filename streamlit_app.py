@@ -6,7 +6,7 @@ import logging
 import time
 import re
 from langchain.llms import GooglePalm
-from db_handler import create_table_for_mcqs, insert_mcqs_into_db, get_existing_mcqs
+from db_handler import create_table_for_mcqs, insert_mcqs_into_db, get_existing_mcqs, get_rds_connection
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -268,9 +268,19 @@ def parse_and_save_mcqs(input_text, output_csv):
     except Exception as e:
         logging.error(f"Error during CSV generation: {str(e)}")
         return False
-
+# Check DB Connection at the Beginning
+def check_db_connection():
+    conn = get_rds_connection()
+    if conn is None:
+        st.error("Database connection is not available. Please check the RDS instance.")
+        return False
+    conn.close()
+    return True
 # Streamlit application
 st.title("OG MCQ Generator")
+
+if not check_db_connection():
+    st.stop()  # Stop further execution if DB is not connected
 
 # Upload input text file
 # uploaded_file = st.file_uploader("Choose a text file", type="txt")
@@ -308,8 +318,8 @@ if st.button("Cook MCQs"):
                 st.success(f"Unique MCQs saved to {unique_mcq_filename}.")
 
                 # Provide a download button for unique MCQ text file
-                with open(unique_mcq_filename, "rb") as file:
-                    st.download_button(label="Download Unique MCQs", data=file, file_name=unique_mcq_filename)
+                # with open(unique_mcq_filename, "rb") as file:
+                    # st.download_button(label="Download Unique MCQs", data=file, file_name=unique_mcq_filename)
 
             else:
                 st.warning("No new MCQs to insert. All generated questions are duplicates.")
