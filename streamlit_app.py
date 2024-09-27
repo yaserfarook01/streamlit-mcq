@@ -276,8 +276,29 @@ def check_db_connection():
         return False
     conn.close()
     return True
-# Streamlit application
+
+# Function to save the "How to Use" text to a DOCX file
+def save_how_to_use_as_docx(filename, content):
+    try:
+        doc = docx.Document()
+        doc.add_heading('How to Use OG MCQ Generator', 0)
+        for line in content.strip().split('\n'):
+            doc.add_paragraph(line)
+        doc.save(filename)
+        logging.info(f"How to Use instructions saved to {filename}.")
+    except Exception as e:
+        logging.error(f"Error saving DOCX file {filename}: {e}")
+
+# Create the DOCX file and provide download option
+how_to_use_filename = "use.docx"
+save_how_to_use_as_docx(how_to_use_filename, how_to_use_text)
+
+# Streamlit App
 st.title("OG MCQ Generator")
+
+# Provide download option for the DOCX file
+with open(how_to_use_filename, "rb") as file:
+    st.download_button(label="Download How to Use Instructions", data=file, file_name=how_to_use_filename)
 
 if not check_db_connection():
     st.stop()  # Stop further execution if DB is not connected
