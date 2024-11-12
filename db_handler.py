@@ -29,9 +29,9 @@ def get_rds_connection(create_db=False):
             host='mcqdb.czg8iug263qh.us-east-1.rds.amazonaws.com',
             user='root',
             password='Farook22',
-            database='mcq'
+            database='mcqdb'
         )
-        logging.info("Connected to the 'mcq' database.")
+        logging.info("Connected to the 'mcqdb' database.")
         return conn
     except mysql.connector.Error as err:
         logging.error(f"Database connection or creation failed: {err}")
