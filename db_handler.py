@@ -11,7 +11,7 @@ def get_rds_connection(create_db=False):
     try:
         if create_db:
             conn = mysql.connector.connect(
-                host='mcq.czg8iug263qh.us-east-1.rds.amazonaws.com',  # Replace with your RDS endpoint
+                host='mcqdb.czg8iug263qh.us-east-1.rds.amazonaws.com',  # Replace with your RDS endpoint
                 user='root',  # Replace with your DB username
                 password='Farook22'  # Replace with your DB password
             )
@@ -26,7 +26,7 @@ def get_rds_connection(create_db=False):
         
         # Now connect to the specific database
         conn = mysql.connector.connect(
-            host='mcq.c30y8giyaus3.us-east-1.rds.amazonaws.com',
+            host='mcqdb.czg8iug263qh.us-east-1.rds.amazonaws.com',
             user='root',
             password='Farook22',
             database='mcq'
